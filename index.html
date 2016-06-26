@@ -9,14 +9,20 @@
 span {
 	font-family: helvetica;
 	font-size: 1.2em;
+	margin-top: 20px;
+	text-align: center;
 }
 .col {
 	height: 80px;
 	width: 80px;
-	border: 1px solid black;
+	border: 1px solid grey;
 	display: table-cell;
 	vertical-align: middle;
 	text-align: center;
+}
+.your-score {
+	text-align: center;
+	margin-top: 20px;
 }
 .grid, .row, .col {
 	-webkit-touch-callout: none; /* iOS Safari */
@@ -45,7 +51,7 @@ span {
 			<button id="start-button" onclick="client.start();" style="font-size: 2em; font-family: helvetica; background-color: #33cc33; border-radius: 50%; width: 150px; height: 150px; border: none; margin-left: 35%;">Start</button>
 		</div>
 
-		<div id="other-player" style="display:none;">
+		<div id="other-player" style="display:none; text-align: center;">
 			<div>
 				<span>Opponent</span>
 				<span id="other-player-name"></span>
@@ -83,12 +89,12 @@ span {
 				</div>
 			</div>
 			<div style="width:160px">
-				<div id="progress-bar" style="width:100%; background-color:red; height: 5px;"></div>
+				<div id="progress-bar" style="width:100%; background-color:red; height: 5px; margin-top:20px;"></div>
 			</div>
 		</div>
 
 		<div>
-			<div>
+			<div class='your-score'>
 				<span id="player-name"></span>
 				<span id="player-score">0</span>
 				<span>words</span>
