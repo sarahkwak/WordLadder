@@ -115,7 +115,8 @@ Server.prototype.match_clients = function() {
 					type: 'game',
 					id: game.id,
 					letter_grid: game.letter_grid,
-					other_player_name: other_player_name
+					other_player_name: other_player_name,
+					client_id: j
 				}
 				//console.log(game_message)
 				var game_message_string = JSON.stringify(game_message)
@@ -195,6 +196,8 @@ Client.prototype.receive = function(message) {
 	var self = this
 	console.log(message)
 	if(message.type == 'game') {
+		// Store client id
+		this.client_id = message.client_id
 		// Load grid and player objects
 		this.game = new Game()
 		this.game.letter_grid = message.letter_grid
@@ -261,6 +264,14 @@ Client.prototype.receive = function(message) {
 		}
 		document.getElementById('score-message').innerText = win_text
 		document.getElementById('game').style.display = 'none';
+
+		// Add other player's words
+		var other_player_index = 1 - this.client_id
+		var other_player_word_list = message.word_list_list[other_player_index]
+		for(var i = 0; i < other_player_word_list.length; i++) {
+			var word = other_player_word_list[i]
+			self.append_word(word, 'other-word-list')
+		}
 
 		// Add all words
 		for(var i = 0; i < message.all_word_list.length; i++) {
