@@ -3,14 +3,20 @@
 <head>
 	<title>Word Ladder</title>
 </head>
+	
 <script src="server.js"></script>
 <style>
+span {
+	font-family: helvetica;
+	font-size: 1.2em;
+}
 .col {
-	height: 40px;
-	width: 40px;
+	height: 80px;
+	width: 80px;
 	border: 1px solid black;
+	display: table-cell;
 	vertical-align: middle;
-	display: inline-block;
+	text-align: center;
 }
 .grid, .row, .col {
 	-webkit-touch-callout: none; /* iOS Safari */
@@ -21,69 +27,76 @@
 	user-select: none; /* non-prefixed version, currently
 	not supported by any browser */
 } 
+#game {
+	width: 30%;
+	margin: auto;
+}
 </style>
 <body onload="client = new Client();">
-	<div>Word Ladder</div>
+	<div class="container" style="width: 80%; margin-left: auto; margin-right:auto;">
+		<div style="font-size: 3em; color: purple; margin-left: auto; margin-right: auto; font-family: helvetica; font-weight: bold; text-align: center; margin-top: 30px; margin-bottom: 5%;">Word Ladder</div>
+		<div class="space" style="height: 10px;"></div>
 
-	<div id="start">
+		<div id="start" style="margin: auto; width: 50%;">
+			<div>
+				<!-- <label for="name">Name:</label> -->
+				<input id="name" name="name" type="text" placeholder="Name:" style="font-size: 2em; margin-bottom: 5%; margin-left: 20%" />
+			</div>
+			<button id="start-button" onclick="client.start();" style="font-size: 2em; font-family: helvetica; background-color: #33cc33; border-radius: 50%; width: 150px; height: 150px; border: none; margin-left: 35%;">Start</button>
+		</div>
+
+		<div id="other-player" style="display:none;">
+			<div>
+				<span>Opponent</span>
+				<span id="other-player-name"></span>
+				<span id="other-player-score">0</span>
+				<span>words</span>
+			</div>
+			<div id="other-word-list"></div>
+		</div>
+
+		<div id="game" style="display:none;">
+			<div class="grid">
+				<div class="row">
+					<div id="00" class="col"></div>
+					<div id="01" class="col"></div>
+					<div id="02" class="col"></div>
+					<div id="03" class="col"></div>
+				</div>
+				<div class="row">
+					<div id="10" class="col"></div>
+					<div id="11" class="col"></div>
+					<div id="12" class="col"></div>
+					<div id="13" class="col"></div>
+				</div>
+				<div class="row">
+					<div id="20" class="col"></div>
+					<div id="21" class="col"></div>
+					<div id="22" class="col"></div>
+					<div id="23" class="col"></div>
+				</div>
+				<div class="row">
+					<div id="30" class="col"></div>
+					<div id="31" class="col"></div>
+					<div id="32" class="col"></div>
+					<div id="33" class="col"></div>
+				</div>
+			</div>
+			<div style="width:160px">
+				<div id="progress-bar" style="width:100%; background-color:red; height: 5px;"></div>
+			</div>
+		</div>
+
 		<div>
-			<label for="name">Name:</label>
-			<input id="name" name="name" type="text" />
-		</div>
-		<button id="start-button" onclick="client.start();">Start</button>
-	</div>
-
-	<div id="other-player" style="display:none;">
-		<div>
-			<span>Opponent</span>
-			<span id="other-player-name"></span>
-			<span id="other-player-score">0</span>
-			<span>words</span>
-		</div>
-		<div id="other-word-list"></div>
-	</div>
-
-	<div id="game" style="display:none;">
-		<div class="grid">
-			<div class="row">
-				<div id="00" class="col"></div>
-				<div id="01" class="col"></div>
-				<div id="02" class="col"></div>
-				<div id="03" class="col"></div>
+			<div>
+				<span id="player-name"></span>
+				<span id="player-score">0</span>
+				<span>words</span>
 			</div>
-			<div class="row">
-				<div id="10" class="col"></div>
-				<div id="11" class="col"></div>
-				<div id="12" class="col"></div>
-				<div id="13" class="col"></div>
-			</div>
-			<div class="row">
-				<div id="20" class="col"></div>
-				<div id="21" class="col"></div>
-				<div id="22" class="col"></div>
-				<div id="23" class="col"></div>
-			</div>
-			<div class="row">
-				<div id="30" class="col"></div>
-				<div id="31" class="col"></div>
-				<div id="32" class="col"></div>
-				<div id="33" class="col"></div>
-			</div>
-		</div>
-		<div style="width:160px">
-			<div id="progress-bar" style="width:100%; background-color:red; height: 5px;"></div>
-		</div>
-	</div>
+			<div id="word-list"></div>
 
-	<div>
-		<div>
-			<span id="player-name"></span>
-			<span id="player-score">0</span>
-			<span>words</span>
+			<div id="score-message"></div>
 		</div>
-		<div id="word-list"></div>
-
-		<div id="score-message"></div>
 	</div>
 </body>
 </html>
