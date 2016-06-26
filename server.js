@@ -315,7 +315,7 @@ Game.prototype.attach_handlers = function() {
 }
 
 Game.prototype.valid_event = function(event) {
-	var margin = 5
+	var margin = 10
 	var x = event.offsetX
 	var y = event.offsetY
 	if(x > margin &&
