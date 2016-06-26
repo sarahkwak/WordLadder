@@ -185,6 +185,12 @@ Client.prototype.increment_element = function(id) {
 	document.getElementById(id).innerText = word_count + 1
 }
 
+Client.prototype.append_word = function(word, element_id) {
+	var word_element = document.createElement('div')
+	word_element.innerText = word
+	document.getElementById(element_id).appendChild(word_element)
+}
+
 Client.prototype.receive = function(message) {
 	var self = this
 	console.log(message)
@@ -230,9 +236,7 @@ Client.prototype.receive = function(message) {
 
 		// Add word to word list
 		if(message.status == 'new') {
-			var word_element = document.createElement('div')
-			word_element.innerText = message.word
-			document.getElementById('word-list').appendChild(word_element)
+			self.append_word(message.word, 'word-list')
 
 			// Increment count
 			self.increment_element('player-score')
@@ -257,6 +261,12 @@ Client.prototype.receive = function(message) {
 		}
 		document.getElementById('score-message').innerText = win_text
 		document.getElementById('game').style.display = 'none';
+
+		// Add all words
+		for(var i = 0; i < message.all_word_list.length; i++) {
+			var word = message.all_word_list[i]
+			self.append_word(word, 'all-word-list')
+		}
 	}
 	else if(message.type == 'increment') {
 		self.increment_element('other-player-score')
@@ -406,6 +416,7 @@ Game.prototype.compute_scores = function() {
 		score_list: score_list,
 		word_list_list: word_list_list,
 		winning_player: winning_player,
+		all_word_list: Object.keys(this.all_word_map),
 	}
 	return score_message
 }
