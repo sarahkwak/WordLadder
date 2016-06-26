@@ -38,6 +38,21 @@ span {
 	width: 30%;
 	margin: auto;
 }
+#score-message {
+	text-align: center;
+	margin: 10px;
+	font-size: 4em;
+	font-family: helvetica;
+	color: #ff0066;
+}
+#word-list {
+	text-align: center;
+}
+p {
+	font-size: 1.2em;
+	text-align: center;
+	font-family: helvetica;
+}
 </style>
 <body onload="client = new Client();">
 	<div class="container" style="width: 80%; margin-left: auto; margin-right:auto;">
@@ -100,6 +115,7 @@ span {
 				<span id="player-score">0</span>
 				<span>words</span>
 			</div>
+			<p>You've got: </p>
 			<div id="word-list"></div>
 
 			<div id="score-message"></div>
