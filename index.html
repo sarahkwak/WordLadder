@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Word Ladder</title>
+</head>
+<script src="server.js"></script>
+<style>
+.col {
+	height: 40px;
+	width: 40px;
+	border: 1px solid black;
+	vertical-align: middle;
+	display: inline-block;
+}
+</style>
+<body onload="client = new Client(); client.init();">
+	<div>Word Ladder</div>
+
+	<div id="start">
+		<div>
+			<label for="name">Name:</label>
+			<input id="name" name="name" type="text" />
+		</div>
+		<button id="start-button" onclick="client.start();">Start</button>
+	</div>
+
+	<div id="game" style="display:none;">
+		<div>Player2: 0</div>
+		<div class="grid">
+			<div class="row">
+				<div class="col">E</div>
+				<div class="col">I</div>
+				<div class="col">D</div>
+				<div class="col">S</div>
+			</div>
+			<div class="row">
+				<div class="col">A</div>
+				<div class="col">T</div>
+				<div class="col">G</div>
+				<div class="col">K</div>
+			</div>
+			<div class="row">
+				<div class="col">M</div>
+				<div class="col">E</div>
+				<div class="col">A</div>
+				<div class="col">D</div>
+			</div>
+			<div class="row">
+				<div class="col">S</div>
+				<div class="col">I</div>
+				<div class="col">F</div>
+				<div class="col">T</div>
+			</div>
+		</div>
+		<div class="progress-bar"></div>
+		<div class="word-list"></div>
+	</div>
+</body>
+</html>

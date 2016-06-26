@@ -1,0 +1,24 @@
+{
+  "name": "wordladder",
+  "version": "1.0.0",
+  "description": "WordLadder game with a letter grid.",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "keywords": [
+    "game",
+    "node",
+    "word",
+    "ladder"
+  ],
+  "author": "Wesley Reardan, Sarah Kwak",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^1.1.1"
+  }
+}
