@@ -49,6 +49,12 @@ Server.prototype.accept_client = function(ws) {
 			else if(ws.game.all_word_map[word]) {
 				status = 'new'
 				player_word_map[word] = true
+
+				// Send increment message to OTHER client
+				var other_index = 1 - ws.index
+				var other_client = ws.game.client_list[other_index]
+				var increment_message = { type: 'increment' }
+				other_client.ws.send(JSON.stringify(increment_message))
 			}
 			var result_message = {
 				type: 'result',
@@ -139,13 +145,15 @@ Server.prototype.match_clients = function() {
 }
 
 Server.prototype.start = function() {
+	server.start_http_server()
+	server.start_websocket_server()
 }
 
 function Client() {
 	this.time_left = Client.time_max
 }
 
-Client.time_max = 20
+Client.time_max = 60
 
 Client.prototype.start = function() {
 	var self = this
@@ -169,6 +177,11 @@ Client.prototype.start = function() {
 	var button = document.getElementById('start-button')
 	button.innerText = 'Waiting'
 	button.style['background-color'] = 'blue'
+}
+
+Client.prototype.increment_element = function(id) {
+	var word_count = parseInt( document.getElementById(id).innerText )
+	document.getElementById(id).innerText = word_count + 1
 }
 
 Client.prototype.receive = function(message) {
@@ -219,6 +232,9 @@ Client.prototype.receive = function(message) {
 			var word_element = document.createElement('div')
 			word_element.innerText = message.word
 			document.getElementById('word-list').appendChild(word_element)
+
+			// Increment count
+			self.increment_element('player-score')
 		}
 
 		// Change background back to white after interval
@@ -231,7 +247,18 @@ Client.prototype.receive = function(message) {
 	}
 	else if(message.type == 'score') {
 		// Display winner
-		document.getElementById('score-message').innerText = message.winning_player
+		var win_text = message.winning_player
+		if(win_text != 'tie') {
+			win_text += ' wins!'
+		}
+		else {
+			win_text = 'Tie!'
+		}
+		document.getElementById('score-message').innerText = win_text
+		document.getElementById('game').style.display = 'none';
+	}
+	else if(message.type == 'increment') {
+		self.increment_element('other-player-score')
 	}
 }
 
@@ -535,8 +562,7 @@ function Player() {
 
 function start_server() {
 	server = new Server()
-	server.start_http_server()
-	server.start_websocket_server()
+	server.start()
 }
 
 function algorithm_test() {
