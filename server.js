@@ -322,7 +322,7 @@ Game.prototype.valid_event = function(event) {
 	// Handle touch events
 	if(!x || !y) {
 		// http://stackoverflow.com/questions/17130940/retrieve-the-same-offsetx-on-touch-like-mouse-event
-		if(!event.target || !event.targetTouches) return false;
+		if(!event.target || !event.targetTouches || event.targetTouches.length == 0) return false;
 		var rect = event.target.getBoundingClientRect();
 		x = event.targetTouches[0].pageX - rect.left;
 		y = event.targetTouches[0].pageY - rect.top;
