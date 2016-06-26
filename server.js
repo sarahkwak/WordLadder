@@ -159,7 +159,7 @@ Client.prototype.start = function() {
 	var self = this
 
 	// Send a message to the server that wer are ready to play a game
-	self.socket = new WebSocket('ws://localhost:8090')
+	self.socket = new WebSocket('ws://strats.4kdev.com:8090')
 	var name = document.getElementById('name').value
 	self.socket.onopen = function() {
 		var client_message = {
