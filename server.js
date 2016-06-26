@@ -318,6 +318,15 @@ Game.prototype.valid_event = function(event) {
 	var margin = 10
 	var x = event.offsetX
 	var y = event.offsetY
+
+	// Handle touch events
+	if(!x || !y) {
+		// http://stackoverflow.com/questions/17130940/retrieve-the-same-offsetx-on-touch-like-mouse-event
+		var rect = event.target.getBoundingClientRect();
+		x = event.targetTouches[0].pageX - rect.left;
+		y = event.targetTouches[0].pageY - rect.top;
+	}
+
 	if(x > margin &&
 		x < 80 - margin &&
 		y > margin &&
