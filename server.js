@@ -160,6 +160,7 @@ Client.prototype.start = function() {
 
 	// Send a message to the server that wer are ready to play a game
 	self.socket = new WebSocket('ws://strats.4kdev.com:8090')
+	//self.socket = new WebSocket('ws://localhost:8090')
 	var name = document.getElementById('name').value
 	self.socket.onopen = function() {
 		var client_message = {
@@ -285,26 +286,46 @@ Game.prototype.attach_handlers = function() {
 	self.each(function(cell, row, col, element) {
 		// Add Touch Handlers
 		element.addEventListener('touchstart', function(event) {
+			if(self.valid_event(event))
 			self.start_move(cell, element)
 		})
 		element.addEventListener('touchmove', function(event) {
+			if(self.valid_event(event))
 			self.move(cell, element)
 		})
 		element.addEventListener('touchend', function(event) {
+			if(self.valid_event(event))
 			self.end_move(cell, element)
 		})
 
 		// Add Mouse Handlers
 		element.addEventListener('mousedown', function(event) {
+			if(self.valid_event(event))
 			self.start_move(cell, element)
 		})
 		element.addEventListener('mousemove', function(event) {
+			if(self.valid_event(event))
 			self.move(cell, element)
 		})
 		element.addEventListener('mouseup', function(event) {
+			if(self.valid_event(event))
 			self.end_move(cell, element)
 		})
 	})
+}
+
+Game.prototype.valid_event = function(event) {
+	var margin = 5
+	var x = event.offsetX
+	var y = event.offsetY
+	if(x > margin &&
+		x < 80 - margin &&
+		y > margin &&
+		y < 80 - margin)
+	{
+		return true
+	}
+	return false
 }
 
 Game.prototype.move = function(cell, element) {
