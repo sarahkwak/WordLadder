@@ -42,11 +42,17 @@ Server.prototype.accept_client = function(ws) {
 		else if(message.type == 'answer') {
 			var word = message.word
 			var status = 'invalid'
-			if(ws.game.all_word_map[word]) {
+			var player_word_map = ws.game.player_word_map[ws.index]
+			if(player_word_map[word]) {
+				status = 'existing'
+			}
+			else if(ws.game.all_word_map[word]) {
 				status = 'new'
+				player_word_map[word] = true
 			}
 			var result_message = {
 				type: 'result',
+				word: word,
 				status: status
 			}
 			ws.send(JSON.stringify(result_message))
@@ -71,10 +77,11 @@ Server.prototype.start_websocket_server = function() {
 }
 
 Server.prototype.match_clients = function() {
+	var self = this
 	//TODO: Sort client list by rating
-	console.log('matching clients %d', this.client_list.length)
+	console.log('matching clients %d', self.client_list.length)
 
-	var length = this.client_list.length
+	var length = self.client_list.length
 	if(length % 2 == 1) {
 		length -= 1
 	}
@@ -84,27 +91,47 @@ Server.prototype.match_clients = function() {
 			var game = new Game()
 			game.generate_grid()
 			game.find_words()
-			game.client_list = [this.client_list[i], this.client_list[i + 1]]
-			game.id = Game.count++
-			this.game_map[game.id] = game
 
-			var game_message = {
-				type: 'game',
-				id: game.id,
-				letter_grid: game.letter_grid,
-				//player_list: game.
+			game.client_list = []
+			for(var j = 0; j < 2; j++) {
+				var client = self.client_list[i + j]
+				client.ws.index = j
+				client.ws.game = game
+				game.client_list.push(client)
 			}
-			//console.log(game_message)
-			var game_message_string = JSON.stringify(game_message)
-			console.log(game_message_string)
+
+			game.id = Game.count++
+			self.game_map[game.id] = game
 
 			for(var j = 0; j < game.client_list.length; j++) {
+				var other_player_name = game.client_list[1 - j].name
+				var game_message = {
+					type: 'game',
+					id: game.id,
+					letter_grid: game.letter_grid,
+					other_player_name: other_player_name
+				}
+				//console.log(game_message)
+				var game_message_string = JSON.stringify(game_message)
+				console.log(game_message_string)
+
 				var client_info = game.client_list[j]
 				client_info.ws.send(game_message_string)
 				client_info.ws.game = game
 			}
+
+			// Set up game finished handler
+			setTimeout(function() {
+				// compute score
+				var message = game.compute_scores()
+				// send back to both clients
+				for(var k = 0; k < game.client_list.length; k++) {
+					var client = game.client_list[k]
+					client.ws.send(JSON.stringify(message))
+				}
+			}, Client.time_max * 1000)
 		}
-		this.client_list.splice(0, length)
+		self.client_list.splice(0, length)
 	}
 	else {
 		// Do nothing, wait for another player
@@ -115,8 +142,10 @@ Server.prototype.start = function() {
 }
 
 function Client() {
-	
+	this.time_left = Client.time_max
 }
+
+Client.time_max = 20
 
 Client.prototype.start = function() {
 	var self = this
@@ -156,8 +185,18 @@ Client.prototype.receive = function(message) {
 		// Hide/Show divs
 		document.getElementById('start').style.display = 'none';
 		document.getElementById('game').style.display = 'block';
+		document.getElementById('other-player').style.display = 'block';
 
 		this.game.attach_handlers()
+
+		document.getElementById('other-player-name').innerText = message.other_player_name
+
+		setInterval(function() {
+			var element = document.getElementById('progress-bar')
+			self.time_left -= 1
+			var percent = self.time_left * 100 / Client.time_max
+			element.style.width = percent + '%'
+		}, 1000)
 	}
 	else if(message.type == 'result') {
 		// Change background to green/red/yellow depending on success
@@ -175,6 +214,13 @@ Client.prototype.receive = function(message) {
 			}
 		})
 
+		// Add word to word list
+		if(message.status == 'new') {
+			var word_element = document.createElement('div')
+			word_element.innerText = message.word
+			document.getElementById('word-list').appendChild(word_element)
+		}
+
 		// Change background back to white after interval
 		setTimeout(function() {
 			self.game.each(function(cell, row, col, element) {
@@ -183,6 +229,10 @@ Client.prototype.receive = function(message) {
 			})
 		}, 500)
 	}
+	else if(message.type == 'score') {
+		// Display winner
+		document.getElementById('score-message').innerText = message.winning_player
+	}
 }
 
 
@@ -190,6 +240,7 @@ Client.prototype.receive = function(message) {
 
 function Game() {
 	this.has_started = false
+	this.player_word_map = [{}, {}]
 }
 
 Game.count = 1
@@ -266,11 +317,39 @@ Game.prototype.each = function(method) {
 	}
 }
 
-// Called on the server:
-// 1. Create the Letter Grid
-// 2. Start the timer
-Game.prototype.start = function() {
+// Computes the score for each player
+Game.prototype.compute_scores = function() {
+	var score_list = []
+	var word_list_list = []
+	for(var i = 0; i < this.client_list.length; i++) {
+		var client = this.client_list[i]
+		var word_map = this.player_word_map[i]
+		var word_list = Object.keys(word_map)
+		word_list_list.push(word_list)
+		var player_score = 0
+		for(var j = 0; j < word_list.length; j++) {
+			var word = word_list[j]
+			var score = word.length - 3
+			player_score += score
+		}
+		score_list.push(player_score)
+	}
 
+	var winning_player = 'tie'
+	if(score_list[0] < score_list[1]) {
+		winning_player = this.client_list[1].name
+	}
+	else if(score_list[0] > score_list[1]) {
+		winning_player = this.client_list[0].name
+	}
+
+	var score_message = {
+		type: 'score',
+		score_list: score_list,
+		word_list_list: word_list_list,
+		winning_player: winning_player,
+	}
+	return score_message
 }
 
 // http://sedition.com/perl/javascript-fy.html
@@ -384,7 +463,9 @@ Game.build_trie = function(word_list) {
 	Game.trie = new Node()
 	for(var i = 0; i < word_list.length; i++) {
 		var word = word_list[i]
-		Game.trie.add(word)
+		if(word.length > 3) {
+			Game.trie.add(word)
+		}
 	}
 }
 
@@ -448,10 +529,6 @@ Game.prototype.search = function(row, col, node, word) {
 	}
 }
 
-Game.prototype.next_page = function() {
-
-}
-
 function Player() {
 
 }
@@ -462,8 +539,7 @@ function start_server() {
 	server.start_websocket_server()
 }
 
-function test() {
-
+function algorithm_test() {
 	//var word_list = ['ACED', 'BRIG', 'DOWN', 'LITE', 'BROWN',]
 	//Game.build_trie(word_list)
 	//console.log(JSON.stringify(Game.trie, null, 4))

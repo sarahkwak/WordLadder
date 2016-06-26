@@ -12,8 +12,17 @@
 	vertical-align: middle;
 	display: inline-block;
 }
+.grid, .row, .col {
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Chrome/Safari/Opera */
+	-khtml-user-select: none; /* Konqueror */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE/Edge */
+	user-select: none; /* non-prefixed version, currently
+	not supported by any browser */
+} 
 </style>
-<body onload="client = new Client(); client.init();">
+<body onload="client = new Client();">
 	<div>Word Ladder</div>
 
 	<div id="start">
@@ -24,8 +33,17 @@
 		<button id="start-button" onclick="client.start();">Start</button>
 	</div>
 
+	<div id="other-player" style="display:none;">
+		<div>
+			<span>Opponent</span>
+			<span id="other-player-name"></span>
+			<span id="other-player-score">0</span>
+			<span>words</span>
+		</div>
+		<div id="other-word-list"></div>
+	</div>
+
 	<div id="game" style="display:none;">
-		<div>Player2: 0</div>
 		<div class="grid">
 			<div class="row">
 				<div id="00" class="col"></div>
@@ -52,8 +70,20 @@
 				<div id="33" class="col"></div>
 			</div>
 		</div>
-		<div class="progress-bar"></div>
-		<div class="word-list"></div>
+		<div style="width:160px">
+			<div id="progress-bar" style="width:100%; background-color:red; height: 5px;"></div>
+		</div>
+	</div>
+
+	<div>
+		<div>
+			<span id="player-name"></span>
+			<span id="player-score">0</span>
+			<span>words</span>
+		</div>
+		<div id="word-list"></div>
+
+		<div id="score-message"></div>
 	</div>
 </body>
 </html>
